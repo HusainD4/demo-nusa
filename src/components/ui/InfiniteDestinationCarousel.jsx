@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import FavoriteButton from "../FavoriteButton.jsx";
+import FallbackCover from "./FallbackCover.jsx";
 import PhotoCredit from "./PhotoCredit.jsx";
 
 const cardGap = 16;
@@ -18,7 +19,11 @@ function DestinationCard({ destination, favorites, onToggleFavorite, onNavigate,
   return (
     <article className="destination-slide-card" ref={cardRef} aria-roledescription="slide">
       <div className="destination-slide-image">
-        <img src={destination.image} alt={destination.alt} loading={index < 3 ? "eager" : "lazy"} />
+        <FallbackCover
+          src={destination.image}
+          alt={destination.alt}
+          className="destination-slide-photo"
+        />
         <span className="destination-slide-label">{destination.label} · {destination.regionLabel}</span>
         <FavoriteButton
           className="destination-slide-favorite"

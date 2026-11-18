@@ -73,7 +73,9 @@ function BookmarkDrawer({ favorites, onToggleFavorite, onNavigate }) {
                   <button className="bookmark-open" type="button" onClick={() => openPlace(place.id)}>
                     <span
                       className="bookmark-item-cover"
-                      style={{ backgroundImage: `linear-gradient(90deg, rgb(9 24 15 / 78%), rgb(9 24 15 / 18%)), url("${place.image}")` }}
+                      style={{
+                        backgroundImage: `linear-gradient(90deg, rgb(9 24 15 / 78%), rgb(9 24 15 / 18%)), url("${place.imageFull}"), url("${place.image}")`,
+                      }}
                     >
                       <span className="bookmark-item-copy">
                         <strong>{place.name}</strong>

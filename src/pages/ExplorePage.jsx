@@ -10,7 +10,7 @@ import StatusBadge from "../components/ui/StatusBadge.jsx";
 import WeatherClock from "../components/ui/WeatherClock.jsx";
 import DestinationPhotoGallery from "../components/ui/explore/DestinationPhotoGallery.jsx";
 import Icon from "../components/ui/Icon.jsx";
-import { alamMetadata, places, getPlaceById } from "../services/alamService.js";
+import { alamMetadata, places, getPlaceById, getPlaceNaturalHistory } from "../services/alamService.js";
 import useAlamFilter from "../hooks/useAlamFilter.js";
 
 export { places, getPlaceById };
@@ -47,15 +47,12 @@ export default function ExplorePage({ onNavigate, favorites = [], onToggleFavori
   const filteredPlaces = useAlamFilter(places, { category, region, query, sort });
 
   const pageCount = pageSize === "all" ? 1 : Math.max(1, Math.ceil(filteredPlaces.length / Number(pageSize)));
+  const visiblePage = Math.min(currentPage, pageCount);
   const visiblePlaces = pageSize === "all"
     ? filteredPlaces
-    : filteredPlaces.slice((currentPage - 1) * Number(pageSize), currentPage * Number(pageSize));
-  const firstVisible = filteredPlaces.length === 0 ? 0 : (currentPage - 1) * (pageSize === "all" ? filteredPlaces.length : Number(pageSize)) + 1;
-  const lastVisible = pageSize === "all" ? filteredPlaces.length : Math.min(currentPage * Number(pageSize), filteredPlaces.length);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [category, region, sort, query, pageSize]);
+    : filteredPlaces.slice((visiblePage - 1) * Number(pageSize), visiblePage * Number(pageSize));
+  const firstVisible = filteredPlaces.length === 0 ? 0 : (visiblePage - 1) * (pageSize === "all" ? filteredPlaces.length : Number(pageSize)) + 1;
+  const lastVisible = pageSize === "all" ? filteredPlaces.length : Math.min(visiblePage * Number(pageSize), filteredPlaces.length);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -74,7 +71,12 @@ export default function ExplorePage({ onNavigate, favorites = [], onToggleFavori
       observer.observe(card);
     });
     return () => observer.disconnect();
-  }, [filteredPlaces]);
+  }, [visiblePlaces]);
+
+  function updateFilter(setter, value) {
+    setCurrentPage(1);
+    setter(value);
+  }
 
   function resetFilters() {
     setCategory("semua");
@@ -112,20 +114,20 @@ export default function ExplorePage({ onNavigate, favorites = [], onToggleFavori
             <h2>Jelajahi puncak Indonesia.</h2>
             <p>Pilih gunung atau bukit, jelajahi wilayah, atau cari nama destinasi.</p>
           </div>
-          <SearchBar value={query} onChange={setQuery} />
+          <SearchBar value={query} onChange={(value) => updateFilter(setQuery, value)} />
         </div>
 
         <FilterControls
           categories={categories}
           category={category}
-          onCategoryChange={setCategory}
+          onCategoryChange={(value) => updateFilter(setCategory, value)}
           regions={regions}
           region={region}
-          onRegionChange={setRegion}
+          onRegionChange={(value) => updateFilter(setRegion, value)}
           sort={sort}
-          onSortChange={setSort}
+          onSortChange={(value) => updateFilter(setSort, value)}
           pageSize={pageSize}
-          onPageSizeChange={setPageSize}
+          onPageSizeChange={(value) => updateFilter(setPageSize, value)}
           onReset={resetFilters}
         />
 
@@ -141,7 +143,10 @@ export default function ExplorePage({ onNavigate, favorites = [], onToggleFavori
                 key={place.id}
               >
                 <button className="catalog-cover" type="button" onClick={() => onNavigate(`/jelajah/${place.id}`)}>
-                  <FallbackCover src={place.image} alt="Foto gunung dan perbukitan di Indonesia" />
+                  <FallbackCover
+                    src={place.image}
+                    alt={`Foto ${place.name}`}
+                  />
                   <span className="cover-shade" />
                   <span className="cover-badges">
                     <span>{place.type}</span>
@@ -185,11 +190,11 @@ export default function ExplorePage({ onNavigate, favorites = [], onToggleFavori
         )}
         {filteredPlaces.length > 0 && pageCount > 1 && (
           <nav className="catalog-pagination" aria-label="Halaman destinasi">
-            <button type="button" onClick={() => setCurrentPage(1)} disabled={currentPage === 1} aria-label="Halaman pertama"><Icon name="chevrons-left" /></button>
-            <button type="button" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={currentPage === 1}><Icon name="chevron-left" /> Sebelumnya</button>
-            <span>Halaman <strong>{currentPage}</strong> dari <strong>{pageCount}</strong></span>
-            <button type="button" onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))} disabled={currentPage === pageCount}>Berikutnya <Icon name="chevron-right" /></button>
-            <button type="button" onClick={() => setCurrentPage(pageCount)} disabled={currentPage === pageCount} aria-label="Halaman terakhir"><Icon name="chevrons-right" /></button>
+            <button type="button" onClick={() => setCurrentPage(1)} disabled={visiblePage === 1} aria-label="Halaman pertama"><Icon name="chevrons-left" /></button>
+            <button type="button" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={visiblePage === 1}><Icon name="chevron-left" /> Sebelumnya</button>
+            <span>Halaman <strong>{visiblePage}</strong> dari <strong>{pageCount}</strong></span>
+            <button type="button" onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))} disabled={visiblePage === pageCount}>Berikutnya <Icon name="chevron-right" /></button>
+            <button type="button" onClick={() => setCurrentPage(pageCount)} disabled={visiblePage === pageCount} aria-label="Halaman terakhir"><Icon name="chevrons-right" /></button>
           </nav>
         )}
       </section>
@@ -218,6 +223,27 @@ export default function ExplorePage({ onNavigate, favorites = [], onToggleFavori
 }
 
 export function PlaceDetailPage({ place, onNavigate, isSaved = false, onToggleFavorite }) {
+  const [naturalHistory, setNaturalHistory] = useState(null);
+  const [naturalHistoryLoadError, setNaturalHistoryLoadError] = useState(false);
+
+  useEffect(() => {
+    let isCurrent = true;
+    setNaturalHistory(null);
+    setNaturalHistoryLoadError(false);
+    if (!place) return () => { isCurrent = false; };
+
+    getPlaceNaturalHistory(place.name)
+      .then((details) => {
+        if (isCurrent) setNaturalHistory(details);
+      })
+      .catch((error) => {
+        console.error("Unable to load destination history details.", error);
+        if (isCurrent) setNaturalHistoryLoadError(true);
+      });
+
+    return () => { isCurrent = false; };
+  }, [place?.id, place?.name]);
+
   if (!place) {
     return (
       <div className="inner-page">
@@ -233,9 +259,19 @@ export function PlaceDetailPage({ place, onNavigate, isSaved = false, onToggleFa
     );
   }
 
+  const descriptionParagraphs = naturalHistory?.descriptionParagraphs ?? place.descriptionParagraphs;
+  const ecology = naturalHistory?.ecology ?? place.ecology;
+  const floraFauna = naturalHistory?.floraFauna ?? place.species;
+  const history = naturalHistory?.history ?? place.history;
+
   return (
     <div className="inner-page place-detail-page">
-      <section className="place-detail-hero" style={{ "--detail-image": `url("${place.image}")` }}>
+      <section
+        className="place-detail-hero"
+        style={{
+          "--detail-image": `url("${place.imageFull}"), url("${place.image}")`,
+        }}
+      >
         <div className="place-detail-shade" />
         <div className="page-width place-detail-hero-content">
           <div className="place-detail-top-actions">
@@ -270,8 +306,9 @@ export function PlaceDetailPage({ place, onNavigate, isSaved = false, onToggleFa
               />
             </div>
             <h2>Tentang {place.name}.</h2>
-            <p>{place.summary}</p>
-            <p>{place.history}</p>
+            {descriptionParagraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
             <p className="detail-coordinate-note">
               Koordinat pada profil menggunakan datum WGS84. Sebagian sumber
               mencatat titik dengan pembulatan sekitar satu menit busur; gunakan
@@ -289,8 +326,23 @@ export function PlaceDetailPage({ place, onNavigate, isSaved = false, onToggleFa
           <article className="detail-ecology-card reveal">
             <span className="eyebrow">ALAM & KEHIDUPAN</span>
             <h2>Ekologi setempat</h2>
-            <Detail label="HABITAT & VEGETASI" value={place.ecology} />
-            <Detail label="FLORA & FAUNA" value={place.species} />
+            <Detail label="HABITAT & VEGETASI" value={ecology} />
+            <Detail label="FLORA & FAUNA" value={floraFauna} />
+          </article>
+          <article className="detail-story-card reveal">
+            <span className="eyebrow">SEJARAH & JEJAK GEOLOGI</span>
+            <h2>Riwayat kawasan.</h2>
+            <p>{history}</p>
+            <p className="detail-coordinate-note">
+              Uraian ini merangkum catatan yang tersedia di katalog, bukan kronologi arsip yang lengkap.
+              Untuk gunung api, periksa arsip PVMBG; untuk sejarah sosial dan budaya, rujuk arsip daerah
+              serta sumber masyarakat setempat. Kredit foto tidak selalu menjadi sumber informasi sejarah.
+            </p>
+            {naturalHistoryLoadError && (
+              <p role="alert">
+                Catatan terperinci gagal dimuat. Informasi dasar tetap tersedia; muat ulang halaman untuk mencoba kembali.
+              </p>
+            )}
           </article>
           {place.myth && (
             <article className="detail-story-card reveal">

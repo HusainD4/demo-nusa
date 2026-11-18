@@ -20,11 +20,18 @@ function DetailModal({ place, onClose, onOpenDetail }) {
     }}>
       <section className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-modal-title">
         <button className="detail-modal-close" type="button" onClick={onClose} aria-label="Tutup detail">×</button>
-        <FallbackCover src={place.image} alt={`Bentang alam ${place.name}`} className="detail-modal-image" />
+        <FallbackCover
+          src={place.imageFull}
+          fallbackSrc={place.image}
+          alt={`Bentang alam ${place.name}`}
+          className="detail-modal-image"
+        />
         <div className="detail-modal-copy">
           <span className="eyebrow">{place.regionLabel} · {place.location}</span>
           <h2 id="detail-modal-title">{place.name}</h2>
-          <p>{place.summary}</p>
+          {place.descriptionParagraphs.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
           <div className="detail-modal-facts">
             <span>Ketinggian <strong>{place.elevation == null ? "Belum tersedia" : `${place.elevation.toLocaleString("id-ID")} mdpl`}</strong></span>
             <span>Koordinat <strong>{place.coordinates}</strong></span>

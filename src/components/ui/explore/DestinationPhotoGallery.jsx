@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { places } from "../../../services/alamService.js";
+import FallbackCover from "../FallbackCover.jsx";
 import PhotoCredit from "../PhotoCredit.jsx";
 import Icon from "../Icon.jsx";
 
@@ -10,7 +12,8 @@ function DestinationPhotoGallery({ place }) {
     for (const item of places) {
       if (item.image && item.imageCredit?.sourcePage && !uniquePhotos.has(item.image)) {
         uniquePhotos.set(item.image, {
-          src: item.image,
+          src: item.imageFull,
+          fallbackSrc: item.image,
           name: item.imageCredit.name || item.name,
           attribution: item.imageCredit,
         });
@@ -18,19 +21,24 @@ function DestinationPhotoGallery({ place }) {
     }
 
     return [...uniquePhotos.values()].sort((first, second) => (
-      first.src === place.image ? -1 : second.src === place.image ? 1 : 0
+      first.src === place.imageFull ? -1 : second.src === place.imageFull ? 1 : 0
     ));
-  }, [place.image]);
+  }, [place.image, place.imageFull]);
 
   useEffect(() => {
     if (previewIndex === null) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     function handleKeyDown(event) {
       if (event.key === "Escape") setPreviewIndex(null);
       if (event.key === "ArrowRight") setPreviewIndex((index) => (index + 1) % photos.length);
       if (event.key === "ArrowLeft") setPreviewIndex((index) => (index - 1 + photos.length) % photos.length);
     }
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [photos.length, previewIndex]);
 
   if (!photos.length) return null;
@@ -56,7 +64,11 @@ function DestinationPhotoGallery({ place }) {
             aria-label={`Pratinjau foto ${photo.name}`}
             onClick={() => setPreviewIndex(index)}
           >
-            <img src={photo.src} alt={`Panorama ${photo.name}`} loading="lazy" />
+            <FallbackCover
+              src={photo.src}
+              fallbackSrc={photo.fallbackSrc}
+              alt={`Panorama ${photo.name}`}
+            />
             <span className="destination-gallery-photo-overlay">
               <strong>{photo.name}</strong>
               <span>Lihat foto <Icon name="arrow-up-right" /></span>
@@ -65,13 +77,21 @@ function DestinationPhotoGallery({ place }) {
         ))}
       </div>
 
-      {activePhoto && (
+      {activePhoto && createPortal(
         <div className="photo-preview-backdrop" onMouseDown={(event) => {
           if (event.target === event.currentTarget) setPreviewIndex(null);
         }}>
           <section className="photo-preview-dialog" role="dialog" aria-modal="true" aria-label={`Pratinjau foto ${activePhoto.name}`}>
             <button className="photo-preview-close" type="button" aria-label="Tutup pratinjau" onClick={() => setPreviewIndex(null)}>×</button>
-            <img className="photo-preview-image" src={activePhoto.src} alt={`Panorama ${activePhoto.name}`} />
+            <div className="photo-preview-stage" style={{ "--preview-image": `url("${activePhoto.src}")` }}>
+              <FallbackCover
+                src={activePhoto.src}
+                fallbackSrc={activePhoto.fallbackSrc}
+                className="photo-preview-image"
+                alt={`Panorama ${activePhoto.name}`}
+              />
+              <span className="photo-preview-stage-label">ARSIP VISUAL NUSA</span>
+            </div>
             <div className="photo-preview-caption">
               <div>
                 <span className="eyebrow eyebrow-light">{String(previewIndex + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}</span>
@@ -84,7 +104,8 @@ function DestinationPhotoGallery({ place }) {
               </div>
             </div>
           </section>
-        </div>
+        </div>,
+        document.body,
       )}
       <span className="visually-hidden">Galeri dibuka dari halaman {place.name}.</span>
     </section>

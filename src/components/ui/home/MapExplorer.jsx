@@ -179,6 +179,9 @@ function MapExplorerPage({
   }, [locations, query]);
 
   function selectLocation(location) {
+    if (activeFilter !== "Semua" && location.kind !== activeFilter) {
+      chooseFilter("Semua");
+    }
     setSelectedLocation(location);
     setQuery(location.name);
     setIsSearchOpen(false);

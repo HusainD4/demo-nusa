@@ -8,9 +8,10 @@ function getPhotoArchive() {
   const archive = new Map();
   for (const place of places) {
     const attribution = place.imageCredit;
-    if (place.image && attribution?.sourcePage && !archive.has(place.image)) {
-      archive.set(place.image, {
-        src: place.image,
+    if (place.imageFull && attribution?.sourcePage && !archive.has(place.imageFull)) {
+      archive.set(place.imageFull, {
+        src: place.imageFull,
+        fallbackSrc: place.image,
         name: attribution.name || place.name,
         attribution,
       });
@@ -183,7 +184,19 @@ export default function ContributionPage({ onNavigate }) {
           <div className="contribution-archive-grid">
             {photoArchive.map((photo) => (
               <article className="contribution-archive-card" key={photo.src}>
-                <img src={photo.src} alt={`Foto ${photo.name}`} loading="lazy" />
+                <img
+                  src={photo.src}
+                  alt={`Foto ${photo.name}`}
+                  loading="lazy"
+                  decoding="async"
+                  onError={(event) => {
+                    const image = event.currentTarget;
+                    if (photo.fallbackSrc && photo.fallbackSrc !== photo.src && !image.dataset.fallbackApplied) {
+                      image.dataset.fallbackApplied = "true";
+                      image.src = photo.fallbackSrc;
+                    }
+                  }}
+                />
                 <div>
                   <span className="contribution-demo-badge">FOTO REFERENSI · DEMO</span>
                   <h3>{photo.name}</h3>

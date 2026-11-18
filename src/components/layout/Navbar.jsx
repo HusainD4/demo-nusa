@@ -10,6 +10,7 @@ function NavigationIcon({ name }) {
     contact: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></>,
     chat: <><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5 8 8 0 0 1-3.4-.75L4 20l1.5-4A7.5 7.5 0 1 1 20 11.5Z" /><path d="M8.5 11.5h.01m3.5 0h.01m3.5 0h.01" /></>,
     menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
+    close: <><path d="m6 6 12 12M18 6 6 18" /></>,
   };
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
@@ -89,6 +90,15 @@ function Navbar({ items, activePage, onNavigate, themeControl }) {
       <nav className="bottom-tabbar" aria-label="Navigasi utama mobile">
         <div className="bottom-tabbar-inner">
           {mobilePrimaryLinks}
+          <a
+            href="/chat"
+            className={`bottom-tab${chatIsActive ? " is-active" : ""}`}
+            aria-current={chatIsActive ? "page" : undefined}
+            onClick={(event) => navigateFromMenu(event, "/chat")}
+          >
+            <span className="bottom-tab-icon"><NavigationIcon name="chat" /></span>
+            <span className="bottom-tab-label">Chat</span>
+          </a>
           <div className={`mobile-menu${isMobileMenuOpen ? " is-open" : ""}`} ref={mobileMenuRef}>
             <button
               className={`bottom-tab mobile-menu-toggle${menuIsActive ? " is-active" : ""}`}
@@ -97,7 +107,7 @@ function Navbar({ items, activePage, onNavigate, themeControl }) {
               aria-controls="mobile-menu-panel"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
             >
-              <span className="bottom-tab-icon"><NavigationIcon name="menu" /></span>
+              <span className="bottom-tab-icon"><NavigationIcon name={isMobileMenuOpen ? "close" : "menu"} /></span>
               <span className="bottom-tab-label">Menu</span>
             </button>
             {isMobileMenuOpen && (
@@ -124,15 +134,6 @@ function Navbar({ items, activePage, onNavigate, themeControl }) {
               </div>
             )}
           </div>
-          <a
-            href="/chat"
-            className={`bottom-tab${chatIsActive ? " is-active" : ""}`}
-            aria-current={chatIsActive ? "page" : undefined}
-            onClick={(event) => navigateFromMenu(event, "/chat")}
-          >
-            <span className="bottom-tab-icon"><NavigationIcon name="chat" /></span>
-            <span className="bottom-tab-label">Chat</span>
-          </a>
         </div>
       </nav>
     </>

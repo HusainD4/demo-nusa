@@ -87,7 +87,9 @@ export default function DestinationFolders({ destinations, favorites, onToggleFa
       >
         <div
           className="destination-folder-cover"
-          style={{ backgroundImage: `url("${selectedDestination.image}")` }}
+          style={{
+            backgroundImage: `url("${selectedDestination.imageFull}"), url("${selectedDestination.image}")`,
+          }}
         >
           <span className="destination-folder-cover-label">{selectedDestination.label} · NUSANTARA</span>
           <FavoriteButton

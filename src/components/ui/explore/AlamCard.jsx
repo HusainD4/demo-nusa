@@ -8,7 +8,10 @@ function AlamCard({ place, isSaved = false, onToggleFavorite, onSelect }) {
   return (
     <article className="catalog-card reveal">
       <button className="catalog-cover" type="button" onClick={() => onSelect(place)}>
-        <FallbackCover src={place.image} alt="Foto gunung dan perbukitan di Indonesia" />
+        <FallbackCover
+          src={place.image}
+          alt={`Foto ${place.name}`}
+        />
         <span className="cover-shade" />
         <span className="cover-badges">
           <span>{place.type}</span>

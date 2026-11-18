@@ -71,6 +71,7 @@ const destinations = places.map((place) => ({
   region: place.region,
   regionLabel: place.regionLabel,
   image: place.image,
+  imageFull: place.imageFull,
   imageCredit: place.imageCredit,
   alt: `Panorama ${place.name}, Indonesia`,
   description: place.summary,
@@ -117,9 +118,19 @@ function LoadingScreen() {
 }
 
 function VideoIntro({ phase, progressRef, videoRef, muted, onToggleAudio, onAutoplayFallback, onFinish, onMetadata, onProgress, onAnimationEnd }) {
-  const canSkip = phase === "playing";
+  const [canSkip, setCanSkip] = useState(false);
   const fadeFrameRef = useRef(0);
   const isFadingRef = useRef(false);
+
+  useEffect(() => {
+    if (phase !== "playing") {
+      setCanSkip(false);
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => setCanSkip(true), 5000);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
 
   useEffect(() => {
     return () => window.cancelAnimationFrame(fadeFrameRef.current);

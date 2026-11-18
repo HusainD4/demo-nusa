@@ -26,7 +26,9 @@ function BookmarkPage({ favorites, onToggleFavorite, onNavigate }) {
                 <button
                   className="bookmark-page-cover"
                   type="button"
-                  style={{ backgroundImage: `linear-gradient(180deg, rgb(9 24 15 / 8%) 20%, rgb(9 24 15 / 78%) 100%), url("${place.image}")` }}
+                  style={{
+                    backgroundImage: `linear-gradient(180deg, rgb(9 24 15 / 8%) 20%, rgb(9 24 15 / 78%) 100%), url("${place.imageFull}"), url("${place.image}")`,
+                  }}
                   onClick={() => onNavigate(`/jelajah/${place.id}`)}
                   aria-label={`Buka detail ${place.name}`}
                 >

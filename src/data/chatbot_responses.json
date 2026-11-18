@@ -266,6 +266,38 @@
       "suggestions": ["Perlengkapan pendakian", "Tips menjaga alam"]
     }
   ],
+  "answerComposition": {
+    "openers": [
+      "Dari panduan NUSA,",
+      "Untuk pertanyaanmu,",
+      "Berikut yang tercatat di data NUSA:"
+    ],
+    "placeOpeners": [
+      "Untuk {name},",
+      "Mengenai {name},",
+      "Catatan NUSA untuk {name}:"
+    ],
+    "descriptionOpeners": [
+      "Berikut gambaran {name} berdasarkan catatan NUSA:",
+      "Data NUSA tentang {name} mencatat:"
+    ],
+    "regionOpeners": [
+      "Di {region},",
+      "Untuk wilayah {region},",
+      "Dari data kawasan {region},"
+    ],
+    "nationalOpeners": [
+      "Dalam cakupan Indonesia,",
+      "Untuk seluruh katalog NUSA,",
+      "Berdasarkan catatan nasional NUSA,"
+    ],
+    "fallbackOpeners": [
+      "Saya belum menemukan kecocokan langsung untuk “{topic}”.",
+      "Belum ada jawaban khusus tentang “{topic}” di data NUSA.",
+      "Saya belum menemukan entri yang cocok dengan “{topic}”."
+    ],
+    "followUp": "Kalau kamu sebutkan nama destinasi atau wilayahnya, saya bisa mengambil detail yang tersedia di katalog."
+  },
   "fallback": {
     "response": "Saya belum menemukan jawaban spesifik untuk kata kunci tersebut di database NUSA. Coba gunakan kata kunci lain seperti Semeru, Rinjani, Kerinci, Puncak Jaya, perlengkapan, atau etika konservasi alam. Ingat, data ini bersifat simulasi referensi.",
     "suggestions": ["Cari gunung", "Tips menjaga alam"]

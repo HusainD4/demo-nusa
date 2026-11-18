@@ -32,6 +32,19 @@ function normalizeText(value) {
     .trim();
 }
 
+const geographicWords = new Set(
+  places.flatMap((place) => [place.regionLabel, place.location])
+    .flatMap((location) => normalizeText(location).split(" ")),
+);
+const genericPlaceWords = new Set(["bukit", "gunung", "puncak", "volcano", "mount"]);
+const placeQuestionWords = new Set([
+  ...ignoredWords,
+  ...geographicWords,
+  ...genericPlaceWords,
+  "akses", "berapa", "daftar", "dimana", "elevasi", "ketinggian", "koordinat", "lokasi",
+  "mdpl", "paling", "rekomendasi", "rendah", "sebutkan", "terendah", "tertinggi", "tinggi",
+]);
+
 function editSimilarity(left, right) {
   if (left === right) return 1;
   if (Math.min(left.length, right.length) < 4) return 0;
@@ -118,45 +131,164 @@ function getBestMatch(message, entries) {
 }
 
 function findPlaceMatch(message) {
+  const meaningfulMessage = normalizeText(message)
+    .split(" ")
+    .filter((word) => word && !placeQuestionWords.has(word))
+    .join(" ");
   const matchingPlaces = places
-    .map((place) => ({ place, score: keywordSimilarity(message, place.name) }))
+    .map((place) => {
+      const normalizedMessage = ` ${normalizeText(message)} `;
+      const searchableName = normalizeText(place.name).replace(/^(gunung|bukit|puncak)\s+/, "");
+      const nameWords = searchableName.split(" ").filter((word) => (
+        word.length >= 4 && !placeQuestionWords.has(word)
+      ));
+      const mentionedWords = nameWords.filter((word) => normalizedMessage.includes(` ${word} `));
+      const exactNameScore = normalizedMessage.includes(` ${searchableName} `)
+        ? 0.99
+        : mentionedWords.length > 0
+          ? Math.min(0.94, 0.82 + mentionedWords.length * 0.06)
+          : 0;
+      return {
+        place,
+        score: Math.max(exactNameScore, keywordSimilarity(meaningfulMessage, searchableName)),
+      };
+    })
     .sort((a, b) => b.score - a.score || a.place.name.length - b.place.name.length);
   return matchingPlaces[0];
+}
+
+function choosePhrase(phrases, message) {
+  const hash = [...normalizeText(message)].reduce(
+    (value, character) => (value * 31 + character.charCodeAt(0)) >>> 0,
+    0,
+  );
+  return phrases[hash % phrases.length];
+}
+
+function findRegionMatch(message) {
+  const normalizedMessage = ` ${normalizeText(message)} `;
+  const locations = [...new Set(places.flatMap((place) => [place.regionLabel, place.location]))]
+    .sort((left, right) => right.length - left.length);
+  return locations.find((location) => normalizedMessage.includes(` ${normalizeText(location)} `));
+}
+
+function resolveRegionalQuestion(message, normalizedMessage) {
+  const region = findRegionMatch(message);
+  const asksForRanking = /\b(tertinggi|paling tinggi|terendah|paling rendah)\b/.test(normalizedMessage);
+  const asksForList = /\b(rekomendasi|daftar|apa saja|beberapa|sebutkan|cari|pilihan)\b/.test(normalizedMessage)
+    || (/\b(gunung|bukit|destinasi|puncak)\b/.test(normalizedMessage) && /\b(di|wilayah|kawasan)\b/.test(normalizedMessage));
+  if (!region && !asksForRanking) return null;
+  if (!asksForRanking && !asksForList) return null;
+
+  const matchingPlaces = places.filter((place) => (
+    !region || place.regionLabel === region || place.location === region
+  ));
+  const ascending = /\b(terendah|paling rendah)\b/.test(normalizedMessage);
+  const rankedPlaces = matchingPlaces
+    .filter((place) => place.elevation !== null)
+    .sort((left, right) => ascending
+      ? left.elevation - right.elevation
+      : right.elevation - left.elevation);
+  if (rankedPlaces.length === 0) return null;
+
+  const asksForSeveral = /\b(rekomendasi|daftar|apa saja|beberapa|2|3|4|5|dua|tiga|empat|lima)\b/.test(normalizedMessage);
+  const count = asksForRanking && !asksForSeveral ? 1 : Math.min(3, rankedPlaces.length);
+  const selectedPlaces = rankedPlaces.slice(0, count);
+  const list = selectedPlaces.map((place) => (
+    `${place.name} (${place.elevation.toLocaleString("id-ID")} mdpl)`
+  )).join(", ");
+  const opener = region
+    ? choosePhrase(responses.answerComposition.regionOpeners, message).replace("{region}", region)
+    : choosePhrase(responses.answerComposition.nationalOpeners, message);
+  const rankingLabel = ascending ? "terendah" : "tertinggi";
+  const response = asksForRanking
+    ? `${opener} ${count > 1 ? `${count} catatan ketinggian ${rankingLabel}` : `catatan ketinggian ${rankingLabel}`} yang tersedia adalah ${list}. Angka ini mengikuti dataset NUSA dan dapat berbeda antar-sumber.`
+    : `${opener} saya menemukan ${list} dalam katalog NUSA. Daftar ini berdasarkan data lokasi dan ketinggian, bukan penilaian tingkat kesulitan atau rekomendasi keselamatan.`;
+
+  return {
+    id: `region-${region ? normalizeText(region) : "indonesia"}`,
+    response,
+    suggestions: ["Tampilkan detail destinasi", "Tips menjaga alam"],
+  };
+}
+
+function resolvePlaceQuestion(message, place) {
+  const normalizedMessage = normalizeText(message);
+  const placeName = /^(gunung|bukit|puncak|pulau|danau|kawah|titik)\b/.test(normalizeText(place.name))
+    ? place.name
+    : `${place.kind === "bukit" ? "Bukit" : "Gunung"} ${place.name}`;
+  const parts = [];
+  const asksForDescription = /\b(jelaskan|deskripsi|deskripsikan|ceritakan|gambarkan|gambaran|tentang|profil|informasi|info)\b/.test(normalizedMessage);
+
+  if (/\b(lokasi|dimana|di mana|letak|alamat|provinsi|wilayah)\b/.test(normalizedMessage)) {
+    parts.push(`lokasinya tercatat di ${place.location}, wilayah ${place.regionLabel}.`);
+  }
+  if (/\b(koordinat|lintang|bujur)\b/.test(normalizedMessage)) {
+    parts.push(`koordinat pada data NUSA adalah ${place.coordinates} (WGS84).`);
+  }
+  if (/\b(ketinggian|tinggi|mdpl|elevasi)\b/.test(normalizedMessage)) {
+    parts.push(place.elevation === null
+      ? "Data ketinggiannya belum tersedia."
+      : `ketinggiannya tercatat ${place.elevation.toLocaleString("id-ID")} mdpl.`);
+  }
+  if (/\b(jenis|tipe|klasifikasi|vulkanik|stratovolcano|complex volcano)\b/.test(normalizedMessage)) {
+    parts.push(`jenis yang dicatat pada dataset adalah ${place.type.toLocaleLowerCase("id")}.`);
+  }
+  if (/\b(status|aman|bahaya|erupsi|siaga)\b/.test(normalizedMessage)) {
+    parts.push(`status atlas saat ini “${place.status}”, bukan informasi real-time. Periksa MAGMA Indonesia/PVMBG dan pengelola kawasan untuk kondisi terkini.`);
+  }
+  if (/\b(cuaca|weather|hujan|suhu)\b/.test(normalizedMessage)) {
+    parts.push(`untuk cuaca ${place.name}, lihat kartu cuaca pada halaman Jelajah dan tetap rujuk peringatan resmi sebelum beraktivitas.`);
+  }
+  if (/\b(jalur|akses|buka|berkunjung|kunjungan)\b/.test(normalizedMessage)) {
+    parts.push("dataset NUSA tidak memverifikasi jalur maupun akses terkini; konfirmasikan langsung kepada pengelola kawasan sebelum berangkat.");
+  }
+  if (asksForDescription) {
+    parts.push(...place.descriptionParagraphs);
+  }
+  if (parts.length === 0) {
+    parts.push(place.summary);
+    parts.push(`Destinasi ini berada di ${place.location}, wilayah ${place.regionLabel}${place.elevation === null
+      ? "."
+      : `, dengan ketinggian tercatat ${place.elevation.toLocaleString("id-ID")} mdpl.`}`);
+    parts.push("Sebutkan lokasi, ketinggian, koordinat, atau deskripsi jika ingin detail tertentu.");
+  }
+
+  const openerPhrases = asksForDescription
+    ? responses.answerComposition.descriptionOpeners
+    : responses.answerComposition.placeOpeners;
+  const opener = choosePhrase(openerPhrases, message).replace("{name}", placeName);
+  return {
+    id: `place-${place.id}`,
+    response: `${opener} ${parts.join(" ")}`,
+    suggestions: [`Tampilkan detail ${placeName}`, "Tips menjaga alam"],
+  };
 }
 
 function resolveResponse(message) {
   const placeMatch = findPlaceMatch(message);
   const intentMatch = getBestMatch(message, responses.intents);
   const normalizedMessage = normalizeText(message);
-  const asksAboutPlace = /\b(lokasi|dimana|di mana|alamat|koordinat|ketinggian|tinggi|mdpl|elevasi|status|aman|bahaya|erupsi|cuaca|weather)\b/.test(normalizedMessage);
-
-  if (placeMatch?.score >= 0.64 && (!intentMatch || placeMatch.score >= intentMatch.score || asksAboutPlace)) {
-    const { place } = placeMatch;
-    let response = `${place.name}: ${place.summary}`;
-
-    if (/\b(lokasi|dimana|di mana|alamat)\b/.test(normalizedMessage)) {
-      response = `${place.name} berada di ${place.location}, wilayah ${place.regionLabel}.`;
-    } else if (/\b(koordinat|lintang|bujur)\b/.test(normalizedMessage)) {
-      response = `Koordinat ${place.name} pada data NUSA: ${place.coordinates} (WGS84). Gunakan peta sebagai konteks lokasi, bukan alat navigasi lapangan.`;
-    } else if (/\b(ketinggian|tinggi|mdpl|elevasi)\b/.test(normalizedMessage)) {
-      response = place.elevation == null
-        ? `Data ketinggian ${place.name} belum tersedia di dataset NUSA.`
-        : `${place.name} tercatat memiliki ketinggian ${place.elevation.toLocaleString("id-ID")} mdpl.`;
-    } else if (/\b(status|aman|bahaya|erupsi)\b/.test(normalizedMessage)) {
-      response = `Status ${place.name} pada atlas tercatat "${place.status}" dan bukan informasi real-time. Untuk kondisi terkini, periksa MAGMA Indonesia/PVMBG dan pengelola kawasan sebelum berkunjung.`;
-    } else if (/\b(cuaca|weather)\b/.test(normalizedMessage)) {
-      response = `Cuaca untuk ${place.name} dapat dilihat di kartu cuaca pada halaman Jelajah. Pilih lokasi yang sesuai untuk melihat data terkini dari Open-Meteo; tetap periksa peringatan resmi sebelum beraktivitas.`;
-    }
-
-    return {
-      id: `place-${place.id}`,
-      response,
-      suggestions: [`Tampilkan detail ${place.name}`, "Tips menjaga alam"],
-    };
+  if (placeMatch?.score >= 0.64 && (!intentMatch || placeMatch.score >= intentMatch.score || /\b(lokasi|koordinat|ketinggian|tinggi|mdpl|status|aman|cuaca)\b/.test(normalizedMessage))) {
+    return resolvePlaceQuestion(message, placeMatch.place);
   }
 
-  if (intentMatch?.score >= 0.4) return intentMatch.entry;
-  return responses.fallback;
+  const regionalAnswer = resolveRegionalQuestion(message, normalizedMessage);
+  if (regionalAnswer) return regionalAnswer;
+
+  if (intentMatch?.score >= 0.4) {
+    const opener = choosePhrase(responses.answerComposition.openers, message);
+    const response = `${opener} ${intentMatch.entry.response}`;
+    return { ...intentMatch.entry, response };
+  }
+
+  const topic = message.trim().replace(/[?.!,]+$/g, "");
+  const opener = choosePhrase(responses.answerComposition.fallbackOpeners, message)
+    .replace("{topic}", topic);
+  return {
+    ...responses.fallback,
+    response: `${opener} ${responses.answerComposition.followUp}`,
+  };
 }
 
 function Chatbot({ pageMode = false, onNavigate }) {
@@ -220,7 +352,7 @@ function Chatbot({ pageMode = false, onNavigate }) {
             <span className="chat-avatar" aria-hidden="true"><ChatIcon /></span>
             <div>
               <h2 id="chat-title">Teman Jelajah</h2>
-              <p><span className="chat-online-dot" /> Simulasi panduan NUSA</p>
+              <p><span className="chat-online-dot" /> Panduan data lokal NUSA</p>
             </div>
             <button
               className="chat-close"
@@ -280,7 +412,7 @@ function Chatbot({ pageMode = false, onNavigate }) {
               </svg>
             </button>
           </form>
-          <p className="chat-disclaimer">Jawaban otomatis untuk simulasi, bukan informasi real-time.</p>
+          <p className="chat-disclaimer">Jawaban dirangkai dari dataset JSON NUSA; status dan cuaca tidak selalu real-time.</p>
         </section>
       )}
       <button
