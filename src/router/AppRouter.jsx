@@ -1,7 +1,9 @@
 export function resolveRoute(pathname) {
   const detailMatch = pathname.match(/^\/jelajah\/([^/]+)\/?$/);
   const normalizedPath = pathname.replace(/\/+$/, "") || "/";
-  const activePage = normalizedPath === "/jelajah" || detailMatch
+  const activePage = normalizedPath === "/"
+    ? "/"
+    : normalizedPath === "/jelajah" || detailMatch
     ? "/jelajah"
     : ["/403", "/404", "/505"].includes(normalizedPath)
       ? normalizedPath

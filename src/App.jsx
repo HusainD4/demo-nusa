@@ -144,7 +144,7 @@ function VideoIntro({ phase, progressRef, videoRef, muted, onToggleAudio, onAuto
     videoRef.current?.play()?.catch(handlePlaybackBlocked);
   }
 
-  function fadeOutAndFinish() {
+  function fadeAudioOut() {
     if (phase === "playing" && !isFadingRef.current) {
       isFadingRef.current = true;
       const video = videoRef.current;
@@ -162,6 +162,10 @@ function VideoIntro({ phase, progressRef, videoRef, muted, onToggleAudio, onAuto
         fadeFrameRef.current = window.requestAnimationFrame(fadeAudio);
       }
     }
+  }
+
+  function fadeOutAndFinish() {
+    fadeAudioOut();
     onFinish();
   }
 
@@ -538,7 +542,7 @@ function App() {
     };
     finishForReducedMotion();
     motionQuery.addEventListener("change", finishForReducedMotion);
-    introFallbackTimerRef.current = window.setTimeout(finishVideoIntro, 1500);
+    introFallbackTimerRef.current = window.setTimeout(finishVideoIntro, 45000);
 
     return () => {
       document.body.classList.remove("intro-active");
@@ -578,7 +582,7 @@ function App() {
     window.clearTimeout(introFallbackTimerRef.current);
     introFallbackTimerRef.current = window.setTimeout(
       finishVideoIntro,
-      1500,
+      duration * 1000 + 30000,
     );
   }
 
