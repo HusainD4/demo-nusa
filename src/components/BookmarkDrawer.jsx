@@ -8,6 +8,7 @@ function BookmarkIcon() {
       <path d="M6.5 4.5h11v16l-5.5-3.8-5.5 3.8v-16Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
     </svg>
   );
+  
 }
 
 function BookmarkDrawer({ favorites, onToggleFavorite, onNavigate }) {
