@@ -174,15 +174,39 @@ function findRegionMatch(message) {
 
 function resolveRegionalQuestion(message, normalizedMessage) {
   const region = findRegionMatch(message);
+  const asksForCount = /\b(berapa|jumlah|banyak|total|count)\b/.test(normalizedMessage);
   const asksForRanking = /\b(tertinggi|paling tinggi|terendah|paling rendah)\b/.test(normalizedMessage);
   const asksForList = /\b(rekomendasi|daftar|apa saja|beberapa|sebutkan|cari|pilihan)\b/.test(normalizedMessage)
     || (/\b(gunung|bukit|destinasi|puncak)\b/.test(normalizedMessage) && /\b(di|wilayah|kawasan)\b/.test(normalizedMessage));
-  if (!region && !asksForRanking) return null;
-  if (!asksForRanking && !asksForList) return null;
+  if (!region && !asksForRanking && !asksForCount) return null;
+  if (!asksForRanking && !asksForList && !asksForCount) return null;
 
-  const matchingPlaces = places.filter((place) => (
+  let matchingPlaces = places.filter((place) => (
     !region || place.regionLabel === region || place.location === region
   ));
+  const requestedKind = /\bbukit\b/.test(normalizedMessage)
+    ? "bukit"
+    : /\b(gunung|mountain|mount)\b/.test(normalizedMessage)
+      ? "gunung"
+      : null;
+  if (requestedKind) {
+    matchingPlaces = matchingPlaces.filter((place) => place.kind === requestedKind);
+  }
+
+  if (asksForCount) {
+    const regionName = region ? `di ${region}` : "di seluruh katalog NUSA";
+    const kindName = requestedKind === "bukit" ? "bukit" : requestedKind === "gunung" ? "gunung" : "bentang alam";
+    const count = matchingPlaces.length;
+    return {
+      id: `count-${region ? normalizeText(region) : "indonesia"}-${requestedKind ?? "all"}`,
+      response: `Dalam katalog NUSA terdapat ${count.toLocaleString("id-ID")} catatan ${kindName} ${regionName}. Angka ini adalah jumlah entri katalog, bukan jumlah resmi seluruh gunung atau bukit di wilayah tersebut.`,
+      suggestions: [
+        `Gunung tertinggi ${region ? `di ${region}` : "di Indonesia"} apa?`,
+        "Sebutkan 3 gunung tertinggi di Indonesia",
+      ],
+    };
+  }
+
   const ascending = /\b(terendah|paling rendah)\b/.test(normalizedMessage);
   const rankedPlaces = matchingPlaces
     .filter((place) => place.elevation !== null)
@@ -191,8 +215,14 @@ function resolveRegionalQuestion(message, normalizedMessage) {
       : right.elevation - left.elevation);
   if (rankedPlaces.length === 0) return null;
 
-  const asksForSeveral = /\b(rekomendasi|daftar|apa saja|beberapa|2|3|4|5|dua|tiga|empat|lima)\b/.test(normalizedMessage);
-  const count = asksForRanking && !asksForSeveral ? 1 : Math.min(3, rankedPlaces.length);
+  const numberWords = { satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5 };
+  const requestedCount = Number(normalizedMessage.match(/\b[1-5]\b/)?.[0])
+    || Object.entries(numberWords).find(([word]) => new RegExp(`\\b${word}\\b`).test(normalizedMessage))?.[1];
+  const asksForSeveral = /\b(rekomendasi|daftar|apa saja|beberapa|sebutkan|top)\b/.test(normalizedMessage)
+    || Boolean(requestedCount);
+  const count = asksForRanking
+    ? Math.min(requestedCount ?? (asksForSeveral ? 3 : 1), 5, rankedPlaces.length)
+    : Math.min(3, rankedPlaces.length);
   const selectedPlaces = rankedPlaces.slice(0, count);
   const list = selectedPlaces.map((place) => (
     `${place.name} (${place.elevation.toLocaleString("id-ID")} mdpl)`
@@ -277,6 +307,8 @@ function resolveResponse(message) {
   if (regionalAnswer) return regionalAnswer;
 
   if (intentMatch?.score >= 0.4) {
+    if (intentMatch.entry.directResponse) return intentMatch.entry;
+
     const opener = choosePhrase(responses.answerComposition.openers, message);
     const response = `${opener} ${intentMatch.entry.response}`;
     return { ...intentMatch.entry, response };

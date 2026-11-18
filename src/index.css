@@ -5124,6 +5124,11 @@ html[data-theme="dark"] .detail-modal-close {
   line-height: 1.85;
 }
 
+.detail-intro-card > p {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
 .detail-ecology-card .detail-block + .detail-block {
   margin-top: 14px;
   padding-top: 14px;

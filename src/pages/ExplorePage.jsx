@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FavoriteButton from "../components/FavoriteButton.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 import FallbackCover from "../components/ui/FallbackCover.jsx";
@@ -10,7 +10,13 @@ import StatusBadge from "../components/ui/StatusBadge.jsx";
 import WeatherClock from "../components/ui/WeatherClock.jsx";
 import DestinationPhotoGallery from "../components/ui/explore/DestinationPhotoGallery.jsx";
 import Icon from "../components/ui/Icon.jsx";
-import { alamMetadata, places, getPlaceById, getPlaceNaturalHistory } from "../services/alamService.js";
+import {
+  alamMetadata,
+  places,
+  getPlaceById,
+  getPlaceDetailedDescription,
+  getPlaceNaturalHistory,
+} from "../services/alamService.js";
 import useAlamFilter from "../hooks/useAlamFilter.js";
 
 export { places, getPlaceById };
@@ -225,6 +231,10 @@ export default function ExplorePage({ onNavigate, favorites = [], onToggleFavori
 export function PlaceDetailPage({ place, onNavigate, isSaved = false, onToggleFavorite }) {
   const [naturalHistory, setNaturalHistory] = useState(null);
   const [naturalHistoryLoadError, setNaturalHistoryLoadError] = useState(false);
+  const fallbackDescriptionParagraphs = useMemo(
+    () => (place ? getPlaceDetailedDescription(place) : []),
+    [place],
+  );
 
   useEffect(() => {
     let isCurrent = true;
@@ -232,7 +242,7 @@ export function PlaceDetailPage({ place, onNavigate, isSaved = false, onToggleFa
     setNaturalHistoryLoadError(false);
     if (!place) return () => { isCurrent = false; };
 
-    getPlaceNaturalHistory(place.name)
+    getPlaceNaturalHistory(place)
       .then((details) => {
         if (isCurrent) setNaturalHistory(details);
       })
@@ -259,7 +269,8 @@ export function PlaceDetailPage({ place, onNavigate, isSaved = false, onToggleFa
     );
   }
 
-  const descriptionParagraphs = naturalHistory?.descriptionParagraphs ?? place.descriptionParagraphs;
+  const descriptionParagraphs = naturalHistory?.detailedDescriptionParagraphs
+    ?? fallbackDescriptionParagraphs;
   const ecology = naturalHistory?.ecology ?? place.ecology;
   const floraFauna = naturalHistory?.floraFauna ?? place.species;
   const history = naturalHistory?.history ?? place.history;
@@ -309,11 +320,6 @@ export function PlaceDetailPage({ place, onNavigate, isSaved = false, onToggleFa
             {descriptionParagraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
-            <p className="detail-coordinate-note">
-              Koordinat pada profil menggunakan datum WGS84. Sebagian sumber
-              mencatat titik dengan pembulatan sekitar satu menit busur; gunakan
-              peta sebagai konteks lokasi, bukan alat navigasi lapangan.
-            </p>
             <a
               className="detail-map-link"
               href={`https://www.openstreetmap.org/?mlat=${place.latitude}&mlon=${place.longitude}#map=11/${place.latitude}/${place.longitude}`}

@@ -264,6 +264,443 @@
       "keywords": ["pemula", "mudah", "ringan", "gunung pemula"],
       "response": "Rekomendasi pemula: Gunung Prau, Gunung Andong, Bukit Moko, atau Gunung Papandayan. Lakukan pemanasan fisik rutin minimal 2 minggu sebelumnya.",
       "suggestions": ["Perlengkapan pendakian", "Tips menjaga alam"]
+    },
+    {
+      "id": "greeting",
+      "keywords": ["hai", "halo", "hello", "hey", "pagi", "siang", "sore", "malam"],
+      "directResponse": true,
+      "response": "Halo! Senang menemanimu menjelajah Nusantara. Kamu bisa bertanya tentang nama dan lokasi destinasi, ketinggian, koordinat, persiapan, keselamatan, atau konservasi.",
+      "suggestions": ["Gunung tertinggi di Indonesia apa?", "Tips pendaki pemula"]
+    },
+    {
+      "id": "greeting_slang",
+      "keywords": ["apa nih", "apanih", "apa kabar", "lagi apa", "tes", "test"],
+      "directResponse": true,
+      "response": "Aku Teman Jelajah NUSA, panduan percakapan berbasis data lokal. Coba tanyakan destinasi tertentu atau hal yang ingin kamu siapkan sebelum berkunjung.",
+      "suggestions": ["Ceritakan tentang Rinjani", "Apa yang perlu dibawa?"]
+    },
+    {
+      "id": "mount_prompt",
+      "keywords": ["mount", "mountain", "gunung apa", "gunung indonesia"],
+      "directResponse": true,
+      "response": "Ada banyak bentang alam di katalog NUSA. Tulis nama atau wilayahnya agar aku bisa mencari catatan tertentu, misalnya “Gunung Agung”, “Sumatra”, atau “gunung tertinggi di Indonesia”.",
+      "suggestions": ["Gunung tertinggi di Indonesia apa?", "Jawa ada berapa gunung?"]
+    },
+    {
+      "id": "identity",
+      "keywords": ["siapa kamu", "nama kamu", "kamu siapa", "ini siapa"],
+      "response": "Aku Teman Jelajah NUSA. Jawabanku dirangkai dari katalog destinasi dan kumpulan respons JSON, jadi aku tidak mengakses model AI eksternal atau mengetahui semua informasi terbaru.",
+      "suggestions": ["Data NUSA berasal dari mana?", "Apa yang bisa kamu jawab?"]
+    },
+    {
+      "id": "capabilities",
+      "keywords": ["bisa apa", "apa yang bisa", "fitur chat", "kemampuan kamu", "apa yang kamu tahu"],
+      "response": "Aku dapat mencari catatan destinasi, merangkum lokasi dan ketinggian, membandingkan daftar di katalog, serta memberi panduan umum persiapan dan konservasi. Untuk status gunung api, cuaca, izin, dan akses terkini, periksa sumber resmi karena data katalog bukan pembaruan langsung.",
+      "suggestions": ["Jawa ada berapa gunung?", "Tips keselamatan"]
+    },
+    {
+      "id": "how_to_ask",
+      "keywords": ["cara bertanya", "bagaimana bertanya", "contoh pertanyaan", "cara pakai", "gunakan chatbot"],
+      "response": "Tulis pertanyaan dengan nama tempat atau topik yang jelas, misalnya “berapa ketinggian Kerinci?”, “ceritakan tentang Kelimutu”, atau “apa yang perlu dibawa?”. Pertanyaan seperti “Jawa ada berapa gunung?” dihitung dari entri katalog, bukan jumlah resmi.",
+      "suggestions": ["Berapa ketinggian Kerinci?", "Apa yang perlu dibawa?"]
+    },
+    {
+      "id": "thanks",
+      "keywords": ["terima kasih", "makasih", "thanks", "tengkyu"],
+      "directResponse": true,
+      "response": "Sama-sama! Semoga informasi di katalog membantu merencanakan perjalanan dengan lebih bijak. Jangan lupa cek aturan dan kondisi terbaru kepada pengelola kawasan.",
+      "suggestions": ["Tips menjaga alam", "Cari gunung pemula"]
+    },
+    {
+      "id": "apology",
+      "keywords": ["maaf", "sorry", "tidak apa apa", "gapapa"],
+      "response": "Tidak apa-apa. Kalau jawaban tadi kurang sesuai, coba tulis nama destinasi dan detail yang ingin diketahui, seperti lokasi, ketinggian, atau koordinat.",
+      "suggestions": ["Contoh pertanyaan", "Cari destinasi"]
+    },
+    {
+      "id": "goodbye",
+      "keywords": ["dadah", "sampai jumpa", "bye", "selamat tinggal"],
+      "directResponse": true,
+      "response": "Sampai jumpa! Jaga diri, hormati aturan setempat, dan tinggalkan alam tetap lestari.",
+      "suggestions": ["Tips menjaga alam", "Perlengkapan pendakian"]
+    },
+    {
+      "id": "unclear_message",
+      "keywords": ["jawab", "jawab dong", "jawab pertanyaan", "ulang jawaban"],
+      "response": "Aku siap membantu. Pesanmu belum menyebut pertanyaan atau topik yang ingin dicari; tulis nama destinasi, wilayah, atau hal yang kamu perlukan agar aku bisa memilih data yang tepat.",
+      "suggestions": ["Gunung tertinggi di Indonesia apa?", "Ceritakan tentang Rinjani"]
+    },
+    {
+      "id": "data_source",
+      "keywords": ["sumber data", "data dari mana", "asal data", "referensi", "sumber informasi"],
+      "response": "Katalog NUSA berisi data geografis nama tempat, koordinat, dan ketinggian, serta beberapa deskripsi dan atribusi foto. Metadata katalog mencantumkan SINAR-BIG, Gunung Bagging, GeoNames, dan PVMBG sebagai rujukan; tiap informasi sebaiknya diperiksa pada sumber aslinya.",
+      "suggestions": ["Seberapa akurat koordinat?", "Bagaimana cek status gunung?"]
+    },
+    {
+      "id": "catalog_coverage",
+      "keywords": ["jumlah data", "berapa destinasi", "berapa entri", "isi katalog", "data nusa"],
+      "response": "Katalog yang digunakan saat ini memuat 352 catatan gunung, bukit, dan bentang alam. Jumlah tersebut adalah cakupan dataset NUSA saat ini, bukan daftar lengkap atau angka resmi untuk seluruh Indonesia.",
+      "suggestions": ["Jawa ada berapa gunung?", "Data NUSA berasal dari mana?"]
+    },
+    {
+      "id": "catalog_count_limit",
+      "keywords": ["jumlah resmi gunung", "total gunung indonesia", "semua gunung indonesia", "daftar lengkap gunung"],
+      "response": "Katalog NUSA bukan gazeter nasional yang lengkap. Untuk jumlah resmi dan nama rupabumi gunakan SINAR dari Badan Informasi Geospasial; hasil hitung di chat hanya merangkum entri yang tersedia di katalog.",
+      "suggestions": ["Jawa ada berapa gunung?", "Data NUSA berasal dari mana?"]
+    },
+    {
+      "id": "coordinate_format",
+      "keywords": ["format koordinat", "wgs84", "arti koordinat", "lintang bujur", "datum koordinat"],
+      "response": "Koordinat destinasi ditampilkan dengan datum WGS84, dalam derajat lintang dan bujur. Beberapa titik sumber dibulatkan dan bisa memiliki ketelitian sekitar satu menit busur; gunakan sebagai konteks peta, bukan navigasi lapangan.",
+      "suggestions": ["Tampilkan koordinat Kerinci", "Buka peta"]
+    },
+    {
+      "id": "elevation_difference",
+      "keywords": ["beda ketinggian", "angka ketinggian berbeda", "mdpl berbeda", "tinggi berbeda sumber"],
+      "response": "Angka ketinggian dapat berbeda karena sumber mengukur titik yang tidak sama, seperti puncak topografis, bibir kawah, atau titik acuan lain, dan karena pembaruan survei. Angka NUSA adalah catatan referensi, bukan hasil pengukuran lapangan terbaru.",
+      "suggestions": ["Bagaimana cek sumber data?", "Gunung tertinggi di Indonesia apa?"]
+    },
+    {
+      "id": "current_status",
+      "keywords": ["status terbaru", "status sekarang", "gunung buka", "gunung ditutup", "masih aktif sekarang"],
+      "response": "Chat dan katalog NUSA tidak menyediakan status operasional atau vulkanik real-time. Periksa MAGMA Indonesia/PVMBG, pengumuman taman nasional, dan pos pengelola sebelum berangkat; patuhi penutupan dan radius bahaya resmi.",
+      "suggestions": ["Sumber resmi status gunung", "Apa yang dilakukan saat darurat?"]
+    },
+    {
+      "id": "weather",
+      "keywords": ["ramalan cuaca", "cuaca besok", "cuaca gunung", "prakiraan cuaca", "hujan di gunung"],
+      "response": "Aku tidak dapat menjamin ramalan cuaca atau kondisi puncak. Periksa prakiraan resmi mendekati waktu perjalanan, perhatikan perubahan lokal, dan tunda perjalanan bila ada peringatan atau kondisi tidak aman.",
+      "suggestions": ["Apa yang dibawa saat hujan?", "Tips keselamatan"]
+    },
+    {
+      "id": "season",
+      "keywords": ["musim terbaik", "kapan mendaki", "waktu mendaki", "musim pendakian"],
+      "response": "Waktu yang sesuai bergantung pada cuaca, aturan kawasan, dan kondisi jalur; tidak ada satu musim yang selalu aman untuk semua gunung. Cek informasi pengelola serta prakiraan resmi, dan jangan memaksakan perjalanan saat hujan lebat, badai, atau penutupan.",
+      "suggestions": ["Bagaimana cek cuaca?", "Apa yang perlu disiapkan?"]
+    },
+    {
+      "id": "permit",
+      "keywords": ["izin pendakian", "simaksi", "tiket masuk", "surat izin", "registrasi pendakian"],
+      "response": "Persyaratan izin, kuota, identitas, dan jalur berbeda di setiap kawasan serta dapat berubah. Daftar hanya melalui saluran resmi pengelola; jangan mengandalkan informasi lama atau perantara yang tidak terverifikasi.",
+      "suggestions": ["Cek status kawasan", "Checklist sebelum berangkat"]
+    },
+    {
+      "id": "booking",
+      "keywords": ["reservasi", "pesan tiket", "kuota pendakian", "booking pendakian", "cara daftar"],
+      "response": "Gunakan situs atau kontak resmi taman nasional/pengelola untuk memeriksa kuota, reservasi, biaya, dan dokumen yang diwajibkan. Konfirmasikan perubahan jadwal serta pembatalan langsung kepada pengelola.",
+      "suggestions": ["Apa itu izin pendakian?", "Checklist sebelum berangkat"]
+    },
+    {
+      "id": "trip_plan",
+      "keywords": ["rencana pendakian", "rencana perjalanan", "itinerary gunung", "merencanakan perjalanan"],
+      "response": "Mulailah dari aturan dan prakiraan cuaca, lalu tentukan rute legal, waktu tempuh konservatif, titik istirahat, kebutuhan air dan makanan, serta batas waktu untuk berbalik. Bagikan rencana kepada orang tepercaya dan jangan mengubah jalur tanpa persetujuan pengelola.",
+      "suggestions": ["Checklist sebelum berangkat", "Apa yang harus dibawa?"]
+    },
+    {
+      "id": "checklist",
+      "keywords": ["checklist", "daftar perlengkapan", "cek barang", "persiapan sebelum mendaki"],
+      "response": "Checklist umum: izin dan identitas, pakaian berlapis, alas kaki sesuai jalur, perlindungan hujan, air dan makanan, penerangan, kotak P3K pribadi, navigasi, daya cadangan, serta kantong untuk membawa pulang sampah. Sesuaikan isi dengan cuaca, durasi, aturan kawasan, dan kemampuan kelompok.",
+      "suggestions": ["Perlengkapan hujan", "Apa saja prinsip keselamatan?"]
+    },
+    {
+      "id": "training",
+      "keywords": ["latihan fisik", "persiapan fisik", "melatih stamina", "olahraga sebelum mendaki"],
+      "response": "Bangun kebugaran secara bertahap melalui aktivitas aerobik, latihan kekuatan dan keseimbangan yang sesuai kondisi tubuh, serta istirahat yang cukup. Jangan memulai latihan berat mendadak; konsultasikan tenaga kesehatan bila memiliki kondisi medis atau ragu dengan kemampuan.",
+      "suggestions": ["Tips pendaki pemula", "Cara aklimatisasi"]
+    },
+    {
+      "id": "acclimatization",
+      "keywords": ["aklimatisasi", "adaptasi ketinggian", "penyakit ketinggian", "altitude sickness"],
+      "response": "Kenaikan ketinggian dapat memicu gangguan kesehatan dan respons tiap orang berbeda. Naik secara bertahap, jangan mengabaikan gejala, dan segera turun ke tempat lebih rendah serta cari bantuan bila kondisi memburuk; konsultasikan rencana tinggi dengan tenaga medis.",
+      "suggestions": ["Apa tanda kondisi darurat?", "Tips keselamatan"]
+    },
+    {
+      "id": "hydration",
+      "keywords": ["minum berapa", "kebutuhan air", "dehidrasi", "hidrasi saat mendaki"],
+      "response": "Kebutuhan cairan berbeda menurut tubuh, cuaca, intensitas, dan durasi. Bawa air yang cukup berdasarkan rencana perjalanan, minum berkala, dan jangan mengandalkan sumber air alam tanpa memastikan keamanan serta aturan pengelola.",
+      "suggestions": ["Checklist sebelum berangkat", "Apa yang dilakukan saat darurat?"]
+    },
+    {
+      "id": "food",
+      "keywords": ["makanan pendakian", "bekal mendaki", "logistik makanan", "bekal gunung"],
+      "response": "Pilih bekal yang sesuai durasi, kebutuhan energi, kondisi kesehatan, serta kemampuan membawa sampah kembali. Simpan makanan dengan aman agar tidak menarik satwa dan ikuti aturan kawasan mengenai memasak maupun penggunaan bahan bakar.",
+      "suggestions": ["Checklist sebelum berangkat", "Etika menyimpan makanan"]
+    },
+    {
+      "id": "clothing",
+      "keywords": ["pakaian mendaki", "baju mendaki", "layering", "jaket gunung"],
+      "response": "Gunakan pakaian berlapis yang bisa disesuaikan dengan suhu dan aktivitas, serta siapkan pelindung angin dan hujan. Hindari bahan katun basah sebagai satu-satunya lapisan; jaga pakaian tetap kering dan sesuaikan dengan prakiraan cuaca.",
+      "suggestions": ["Perlengkapan hujan", "Checklist sebelum berangkat"]
+    },
+    {
+      "id": "footwear",
+      "keywords": ["sepatu mendaki", "sandal gunung", "alas kaki", "sepatu hiking"],
+      "response": "Pilih alas kaki yang pas, sudah dicoba sebelumnya, dan sesuai permukaan jalur. Gunakan kaus kaki yang nyaman serta rawat lecet sejak awal; jenis sepatu tertentu tidak menjamin perjalanan aman bila jalur atau cuaca berbahaya.",
+      "suggestions": ["Tips pendaki pemula", "Checklist sebelum berangkat"]
+    },
+    {
+      "id": "navigation",
+      "keywords": ["navigasi", "tersesat", "kompas", "peta offline", "gps"],
+      "response": "Pelajari peta dan rute resmi sebelum berangkat, bawa alat navigasi yang sesuai, serta simpan peta offline karena sinyal dapat hilang. Tetap bersama kelompok dan ikuti arahan petugas; jangan mencoba jalan pintas saat kehilangan jalur.",
+      "suggestions": ["Apa yang dilakukan saat tersesat?", "Persiapan pendakian"]
+    },
+    {
+      "id": "communication",
+      "keywords": ["sinyal hp", "komunikasi darurat", "ponsel gunung", "sinyal gunung"],
+      "response": "Sinyal seluler tidak tersedia merata di pegunungan. Beri tahu kontak tepercaya tentang rute dan waktu kembali, simpan nomor pengelola/layanan darurat, hemat baterai, dan jangan menganggap ponsel sebagai satu-satunya alat keselamatan.",
+      "suggestions": ["Checklist sebelum berangkat", "Apa yang dilakukan saat darurat?"]
+    },
+    {
+      "id": "group_safety",
+      "keywords": ["mendaki berkelompok", "teman mendaki", "jalan sendiri", "mendaki solo"],
+      "response": "Sesuaikan perjalanan dengan pengalaman dan kemampuan anggota, sepakati pemimpin serta titik kumpul, dan jangan meninggalkan anggota sendirian. Perjalanan solo meningkatkan konsekuensi jika terjadi masalah; ikuti aturan pengelola dan pertimbangkan pendamping berpengalaman.",
+      "suggestions": ["Tips pendaki pemula", "Rencana pendakian"]
+    },
+    {
+      "id": "turnaround",
+      "keywords": ["kapan harus turun", "balik arah", "batal mendaki", "kapan berhenti"],
+      "response": "Berbalik arah adalah keputusan keselamatan yang tepat bila cuaca memburuk, ada gejala sakit, waktu tidak cukup, anggota tertinggal, rute tidak jelas, atau pengelola memberi peringatan. Tetapkan batas waktu sebelum berangkat dan jangan menjadikan puncak sebagai kewajiban.",
+      "suggestions": ["Tips keselamatan", "Apa yang dilakukan saat darurat?"]
+    },
+    {
+      "id": "thunderstorm",
+      "keywords": ["petir", "badai", "kilat", "hujan badai"],
+      "response": "Jika terdengar petir atau cuaca badai mendekat, jauhi punggungan, puncak, pohon tunggal, dan benda logam; ikuti arahan petugas dan cari perlindungan yang aman. Jangan meneruskan pendakian demi mencapai puncak, dan cek prakiraan serta peringatan resmi sebelum berangkat.",
+      "suggestions": ["Apa yang dibawa saat hujan?", "Kapan harus berbalik?"]
+    },
+    {
+      "id": "cold_weather",
+      "keywords": ["hipotermia", "kedinginan", "suhu dingin", "menggigil"],
+      "response": "Kedinginan berat, kebingungan, bicara pelo, atau koordinasi menurun dapat menandakan keadaan darurat. Pindahkan orang ke tempat terlindung, ganti lapisan basah bila aman, dan minta bantuan; jangan menunda pertolongan atau memaksa korban berjalan.",
+      "suggestions": ["Apa yang dilakukan saat darurat?", "Pakaian untuk cuaca dingin"]
+    },
+    {
+      "id": "first_aid",
+      "keywords": ["p3k", "pertolongan pertama", "obat mendaki", "kotak obat"],
+      "response": "Bawa perlengkapan P3K pribadi yang dipahami penggunaannya dan sesuai kondisi kesehatan, serta ketahui cara meminta bantuan. Chat ini bukan diagnosis atau pengganti tenaga medis; kondisi serius memerlukan pertolongan darurat dan arahan petugas.",
+      "suggestions": ["Apa tanda kondisi darurat?", "Checklist sebelum berangkat"]
+    },
+    {
+      "id": "emergency",
+      "keywords": ["keadaan darurat", "darurat di gunung", "minta bantuan", "evakuasi gunung"],
+      "response": "Prioritaskan keselamatan, hubungi petugas/pengelola melalui jalur resmi, sampaikan lokasi terakhir, kondisi korban, jumlah orang, dan kebutuhan bantuan. Jangan memisahkan kelompok atau melakukan evakuasi teknis tanpa kemampuan; ikuti instruksi tim penyelamat.",
+      "suggestions": ["Apa yang dilakukan saat tersesat?", "Kontak pengelola kawasan"]
+    },
+    {
+      "id": "lost",
+      "keywords": ["kalau tersesat", "cara mengatasi tersesat", "kehilangan jalur", "nyasar di gunung"],
+      "response": "Berhenti di lokasi yang aman, tetap bersama kelompok, jangan mengambil jalan pintas, dan hubungi petugas/pengelola dengan lokasi terakhir yang diketahui. Hemat baterai dan persediaan, gunakan alat navigasi hanya bila memahami penggunaannya, lalu ikuti arahan resmi.",
+      "suggestions": ["Navigasi pendakian", "Apa yang dilakukan saat darurat?"]
+    },
+    {
+      "id": "volcano_safety",
+      "keywords": ["zona bahaya", "radius aman", "awan panas", "abu vulkanik"],
+      "response": "Zona bahaya dan rekomendasi aktivitas ditentukan oleh otoritas vulkanologi dan dapat berubah cepat. Jangan memasuki area terlarang atau mendekati kawah; ikuti laporan PVMBG/MAGMA Indonesia dan instruksi pemerintah daerah.",
+      "suggestions": ["Status gunung terbaru", "Sumber resmi status gunung"]
+    },
+    {
+      "id": "gas_safety",
+      "keywords": ["gas beracun", "bau belerang", "gas kawah", "sulfur gunung"],
+      "response": "Gas vulkanik dapat berbahaya meskipun tidak selalu terlihat atau tercium jelas. Jauhi kawah dan area yang ditutup, segera bergerak ke arah aman sesuai petunjuk petugas bila ada peringatan, dan jangan mengandalkan masker biasa sebagai perlindungan terhadap semua gas.",
+      "suggestions": ["Zona bahaya gunung api", "Status gunung terbaru"]
+    },
+    {
+      "id": "rain_gear",
+      "keywords": ["jas hujan", "perlengkapan hujan", "baju basah", "hujan saat mendaki"],
+      "response": "Siapkan lapisan luar tahan hujan, pelindung untuk isi tas, dan pakaian kering cadangan dalam kemasan kedap air. Hujan lebat dapat meningkatkan risiko hipotermia, banjir bandang, atau longsor; patuhi penutupan jalur dan tunda perjalanan bila peringatan berlaku.",
+      "suggestions": ["Tips keselamatan cuaca", "Checklist sebelum berangkat"]
+    },
+    {
+      "id": "wildlife",
+      "keywords": ["bertemu satwa", "satwa liar", "hewan gunung", "hewan buas"],
+      "response": "Amati satwa dari jarak aman, jangan memberi makan, menyentuh, mengejar, atau menghalangi jalurnya. Simpan makanan tertutup dan laporkan konflik satwa kepada petugas; jangan menyebarkan lokasi spesies sensitif tanpa izin.",
+      "suggestions": ["Konservasi alam", "Cara menyimpan makanan"]
+    },
+    {
+      "id": "plant_protection",
+      "keywords": ["memetik bunga", "edelweis", "ambil tanaman", "flora langka"],
+      "response": "Jangan memetik, menggali, atau membawa pulang tumbuhan, termasuk edelweis dan flora langka. Foto tanpa merusak, tetap di jalur, dan laporkan perdagangan atau gangguan habitat kepada pengelola kawasan.",
+      "suggestions": ["Etika konservasi", "Cara mengamati satwa"]
+    },
+    {
+      "id": "campfire",
+      "keywords": ["api unggun", "membuat api", "kebakaran hutan", "kompor camping"],
+      "response": "Gunakan kompor hanya bila diizinkan, pada lokasi yang ditetapkan, dan jauh dari bahan mudah terbakar. Jangan menyalakan api terbuka di kawasan rawan; pastikan bahan bakar dan sampah dibawa kembali sesuai peraturan pengelola.",
+      "suggestions": ["Konservasi alam", "Aturan berkemah"]
+    },
+    {
+      "id": "toilet",
+      "keywords": ["buang air", "toilet gunung", "sanitasi pendakian", "sampah manusia"],
+      "response": "Gunakan fasilitas sanitasi resmi bila tersedia dan ikuti aturan kawasan untuk limbah manusia. Jauhkan limbah dari sumber air dan jalur; jangan meninggalkan tisu, pembalut, atau produk sanitasi di alam.",
+      "suggestions": ["Konservasi alam", "Etika berkemah"]
+    },
+    {
+      "id": "water_source",
+      "keywords": ["air sungai aman", "air mata air", "minum air gunung", "sumber air"],
+      "response": "Air jernih belum tentu aman diminum, dan ketersediaan sumber air dapat berubah. Gunakan sumber yang ditetapkan pengelola, olah air dengan metode yang sesuai, dan jangan mencemari mata air, danau, atau aliran.",
+      "suggestions": ["Kebutuhan air", "Konservasi sumber air"]
+    },
+    {
+      "id": "camping",
+      "keywords": ["aturan berkemah", "camping di gunung", "tempat mendirikan tenda", "camp site"],
+      "response": "Berkemah hanya di lokasi yang diizinkan pengelola, gunakan area yang sudah ditetapkan, dan hindari vegetasi rapuh serta tepi aliran air. Bawa kembali seluruh sampah dan patuhi batas api, kebisingan, kuota, dan waktu tinggal.",
+      "suggestions": ["Etika berkemah", "Konservasi alam"]
+    },
+    {
+      "id": "noise",
+      "keywords": ["jangan berisik", "musik di gunung", "kebisingan pendaki", "speaker gunung"],
+      "response": "Jaga suara tetap rendah agar tidak mengganggu satwa dan pengunjung lain. Hindari speaker keras, terutama malam hari, dan hormati ketenangan lokasi yang memiliki nilai budaya atau spiritual.",
+      "suggestions": ["Hormati budaya lokal", "Konservasi alam"]
+    },
+    {
+      "id": "local_culture",
+      "keywords": ["adat setempat", "budaya lokal", "aturan adat", "tempat sakral"],
+      "response": "Tanyakan dan ikuti tata cara setempat, minta izin sebelum memotret orang atau upacara, dan jangan memasuki tempat sakral yang dibatasi. Perlakukan cerita serta praktik adat dengan hormat dan jangan mengubahnya menjadi klaim tanpa sumber.",
+      "suggestions": ["Etika berkunjung", "Konservasi alam"]
+    },
+    {
+      "id": "photography",
+      "keywords": ["foto pendakian", "fotografi gunung", "drone", "foto satwa"],
+      "response": "Fotolah tanpa keluar jalur, merusak tanaman, mengganggu satwa, atau membahayakan diri demi sudut gambar. Penggunaan drone dan pemotretan di kawasan konservasi dapat memerlukan izin khusus; periksa peraturan pengelola terlebih dahulu.",
+      "suggestions": ["Konservasi alam", "Aturan kawasan"]
+    },
+    {
+      "id": "waste",
+      "keywords": ["bawa turun sampah", "sampah pendakian", "plastik gunung", "sampah di jalur"],
+      "response": "Rencanakan cara membawa pulang kemasan, sisa makanan, dan sampah sanitasi sejak awal. Jangan membakar atau menyembunyikan sampah; gunakan fasilitas pengelola bila tersedia dan tinggalkan lokasi lebih bersih tanpa memindahkan benda alam.",
+      "suggestions": ["Etika Leave No Trace", "Checklist sebelum berangkat"]
+    },
+    {
+      "id": "firewood",
+      "keywords": ["ambil kayu", "potong ranting", "kayu bakar", "merusak pohon"],
+      "response": "Jangan menebang pohon, mematahkan cabang hidup, atau mengambil bahan alam dari kawasan. Patuhi aturan bahan bakar dan memasak; ekosistem hutan membutuhkan kayu mati dan vegetasi sebagai bagian dari habitat.",
+      "suggestions": ["Aturan berkemah", "Konservasi alam"]
+    },
+    {
+      "id": "trail_etiquette",
+      "keywords": ["etika jalur", "mendahului pendaki", "keluar jalur", "jalan pintas gunung"],
+      "response": "Tetap di jalur resmi, beri ruang kepada pendaki lain, dan jangan membuat jalur pintas yang mempercepat erosi serta merusak vegetasi. Ikuti penanda dan instruksi petugas walaupun jalur terlihat lebih panjang.",
+      "suggestions": ["Konservasi alam", "Keselamatan kelompok"]
+    },
+    {
+      "id": "visitor_respect",
+      "keywords": ["etika berkunjung", "wisata bertanggung jawab", "hormati pengelola", "sopan santun wisata"],
+      "response": "Patuhi aturan, kuota, jam kunjungan, dan arahan petugas; minta izin sebelum memotret warga atau memasuki ruang privat. Jangan mengambil artefak atau sumber daya alam, dan dukung usaha lokal secara bertanggung jawab.",
+      "suggestions": ["Hormati budaya lokal", "Konservasi alam"]
+    },
+    {
+      "id": "tourism_impact",
+      "keywords": ["dampak wisata", "wisata berkelanjutan", "wisata alam berkelanjutan", "pengunjung merusak"],
+      "response": "Jumlah pengunjung dan perilakunya dapat memengaruhi sampah, sumber air, vegetasi, satwa, dan kehidupan warga. Ikuti kuota, gunakan layanan lokal secara etis, dan laporkan kerusakan kepada pengelola tanpa mengganggu habitat.",
+      "suggestions": ["Etika konservasi", "Bawa turun sampah"]
+    },
+    {
+      "id": "health",
+      "keywords": ["kondisi kesehatan", "penyakit sebelum mendaki", "boleh mendaki sakit", "medis pendakian"],
+      "response": "Kesesuaian pendakian bergantung pada kondisi kesehatan, ketinggian, cuaca, dan tingkat kesulitan rute. Konsultasikan rencana dengan tenaga medis bila memiliki penyakit, sedang hamil, atau memakai obat rutin; jangan mengubah obat berdasarkan saran chatbot.",
+      "suggestions": ["Persiapan fisik", "Apa yang dilakukan saat darurat?"]
+    },
+    {
+      "id": "budget",
+      "keywords": ["biaya pendakian", "budget mendaki", "harga tiket gunung", "biaya masuk"],
+      "response": "Biaya tiket, izin, transportasi, porter, dan perlengkapan berbeda menurut kawasan serta dapat berubah. Periksa tarif resmi pengelola sebelum perjalanan dan hindari pembayaran ke pihak yang tidak terverifikasi.",
+      "suggestions": ["Cara reservasi", "Checklist sebelum berangkat"]
+    },
+    {
+      "id": "family_trip",
+      "keywords": ["anak mendaki", "mendaki bersama anak", "keluarga ke gunung", "wisata keluarga gunung"],
+      "response": "Pilih kegiatan sesuai usia, kesehatan, kemampuan, dan aturan pengelola; tidak semua jalur cocok untuk anak. Pastikan pendamping cukup, cuaca mendukung, ada rencana berbalik, dan jangan membawa anak ke area yang ditutup atau berbahaya.",
+      "suggestions": ["Tips pendaki pemula", "Cek aturan kawasan"]
+    },
+    {
+      "id": "solo_safety",
+      "keywords": ["mendaki sendirian", "sendiri ke gunung", "solo hiking", "pendakian solo"],
+      "response": "Mendaki sendiri meningkatkan risiko karena bantuan mungkin jauh dan jaringan komunikasi terbatas. Ikuti larangan pengelola, bagikan rencana dan waktu kembali, pertimbangkan pendamping berpengalaman, serta jangan berangkat bila cuaca atau kondisi tubuh tidak mendukung.",
+      "suggestions": ["Keselamatan kelompok", "Rencana pendakian"]
+    },
+    {
+      "id": "map_help",
+      "keywords": ["cara pakai peta", "peta nusa", "peta gunung", "lihat lokasi gunung"],
+      "response": "Peta NUSA membantu melihat sebaran catatan koordinat dan membuka konteks lokasi, tetapi bukan peta navigasi resmi atau jalur pendakian. Verifikasi titik, rute, akses, dan batas kawasan pada peta serta pengelola resmi sebelum melakukan perjalanan.",
+      "suggestions": ["Format koordinat", "Tampilkan koordinat Kerinci"]
+    },
+    {
+      "id": "sources_safety",
+      "keywords": ["sumber pvmbg", "magma indonesia", "cek aktivitas gunung", "info vulkanik"],
+      "response": "Untuk aktivitas gunung api dan rekomendasi bahaya, rujuk MAGMA Indonesia/PVMBG melalui kanal resmi. Untuk akses dan penutupan jalur, periksa pengumuman pengelola kawasan dan pemerintah daerah.",
+      "suggestions": ["Status gunung terbaru", "Zona bahaya gunung api"]
+    },
+    {
+      "id": "image_credit",
+      "keywords": ["kredit foto", "siapa fotografer", "lisensi foto", "sumber gambar"],
+      "response": "Foto pada katalog memiliki tautan atribusi yang mencantumkan pencipta dan lisensi bila tersedia. Kredit foto adalah sumber hak penggunaan gambar, bukan otomatis sumber fakta tentang sejarah, ekologi, atau status destinasi.",
+      "suggestions": ["Data NUSA berasal dari mana?", "Ceritakan tentang Rinjani"]
+    },
+    {
+      "id": "data_update",
+      "keywords": ["data diperbarui", "kapan update", "apakah data terbaru", "data real time"],
+      "response": "Katalog destinasi NUSA bukan layanan pembaruan real-time. Nama, koordinat, ketinggian, kondisi jalur, cuaca, izin, dan status gunung bisa berubah atau berbeda antar-sumber; periksa instansi terkait sebelum mengambil keputusan.",
+      "suggestions": ["Status gunung terbaru", "Prakiraan cuaca"]
+    },
+    {
+      "id": "geology",
+      "keywords": ["jenis gunung api", "stratovolcano", "kaldera", "geologi gunung"],
+      "response": "Istilah geologi seperti stratovolcano, kompleks vulkanik, dan kaldera menjelaskan bentuk atau proses geologi yang berbeda. Penjelasan pada katalog bersifat pengenalan; interpretasi rinci dan sejarah erupsi sebaiknya merujuk publikasi geologi atau PVMBG.",
+      "suggestions": ["Ceritakan tentang Kaldera Toba", "Sumber data geologi"]
+    },
+    {
+      "id": "forest_ecology",
+      "keywords": ["fungsi hutan gunung", "ekologi pegunungan", "hutan pegunungan", "manfaat ekosistem"],
+      "response": "Hutan pegunungan dapat membantu menjaga tanah, aliran air, penyimpanan karbon, dan habitat spesies. Fungsi dan spesies yang ada berbeda menurut ketinggian serta wilayah; jangan menganggap satu uraian berlaku untuk semua gunung.",
+      "suggestions": ["Konservasi alam", "Flora dan fauna destinasi"]
+    },
+    {
+      "id": "water_conservation",
+      "keywords": ["jaga mata air", "konservasi air", "sumber air gunung", "danau gunung"],
+      "response": "Jangan mencuci dengan sabun, membuang sampah, atau mengambil air melebihi ketentuan di danau dan mata air. Jaga jarak aktivitas dari sumber air dan ikuti aturan khusus pengelola, terutama di kawasan yang menjadi hulu bagi permukiman.",
+      "suggestions": ["Etika berkemah", "Bawa turun sampah"]
+    },
+    {
+      "id": "responsible_photography",
+      "keywords": ["foto tanpa merusak", "foto edelweis", "foto satwa aman", "ambil foto alam"],
+      "response": "Gunakan zoom atau sudut pandang dari jalur yang sudah ada, jangan menginjak vegetasi atau memancing satwa untuk berpose. Hargai privasi warga dan kesakralan tempat, serta ikuti pembatasan fotografi maupun drone.",
+      "suggestions": ["Lindungi flora", "Hormati budaya lokal"]
+    },
+    {
+      "id": "mountain_names",
+      "keywords": ["nama lain gunung", "nama lokal", "nama berbeda", "alias gunung"],
+      "response": "Satu bentang alam dapat memiliki nama lokal, ejaan, atau transliterasi yang berbeda. Katalog mungkin memakai satu nama utama untuk pencarian; konfirmasikan nama resmi dan rupabumi pada gazeter BIG serta masyarakat setempat.",
+      "suggestions": ["Data NUSA berasal dari mana?", "Bagaimana mencari destinasi?"]
+    },
+    {
+      "id": "accessibility",
+      "keywords": ["aksesibilitas", "jalur kursi roda", "disabilitas mendaki", "jalur ramah disabilitas"],
+      "response": "Kondisi aksesibilitas berbeda di tiap lokasi dan tidak dijelaskan lengkap dalam katalog. Hubungi pengelola untuk kondisi jalur, fasilitas, evakuasi, dan akomodasi yang tersedia sebelum berkunjung; jangan mengasumsikan akses berdasarkan foto.",
+      "suggestions": ["Cara menghubungi pengelola", "Rencana perjalanan"]
+    },
+    {
+      "id": "volunteer",
+      "keywords": ["relawan konservasi", "ikut bersih gunung", "kegiatan lingkungan", "jadi relawan"],
+      "response": "Cari program resmi dari taman nasional, komunitas konservasi yang jelas, atau pemerintah daerah dan pahami tujuan serta dampaknya. Jangan memasuki habitat sensitif atau melakukan penanaman/pembersihan tanpa arahan pengelola.",
+      "suggestions": ["Konservasi alam", "Wisata bertanggung jawab"]
+    },
+    {
+      "id": "contribution",
+      "keywords": ["kirim foto", "kontribusi foto", "tambah informasi", "koreksi data"],
+      "response": "Gunakan halaman Kontak & Kontribusi untuk melihat alur kirim foto pratinjau. Form saat ini merupakan simulasi lokal; data yang diisi tidak diunggah atau disimpan ke server.",
+      "suggestions": ["Buka halaman kontribusi", "Kredit foto"]
+    },
+    {
+      "id": "language_support",
+      "keywords": ["bahasa inggris", "english", "bahasa chatbot", "bisa bahasa"],
+      "response": "Aku dirancang menjawab terutama dalam bahasa Indonesia dan mengenali sebagian istilah Inggris sederhana. Istilah lokal atau ejaan lain mungkin perlu ditulis bersama nama wilayah agar pencarian lebih tepat.",
+      "suggestions": ["Contoh pertanyaan", "Cari destinasi"]
+    },
+    {
+      "id": "slow_response",
+      "keywords": ["lama menjawab", "chat lambat", "jawaban lama", "loading chat"],
+      "response": "Jawaban Teman Jelajah dihitung lokal dari katalog dan respons JSON, tanpa menunggu layanan AI eksternal. Jika tampilan tertahan, pastikan pesan tidak terlalu panjang lalu coba muat ulang halaman.",
+      "suggestions": ["Contoh pertanyaan", "Apa yang bisa kamu jawab?"]
     }
   ],
   "answerComposition": {
